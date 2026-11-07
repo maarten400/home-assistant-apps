@@ -1,0 +1,41 @@
+name: Sync Vaultwarden add-on
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync Vaultwarden add-on from upstream
+        run: |
+          git remote add upstream https://github.com/hassio-addons/app-vaultwarden.git
+          git fetch upstream main --depth=1
+          rm -rf vaultwarden
+          git checkout upstream/main -- vaultwarden
+
+      - name: Create or update pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: sync/vaultwarden
+          base: main
+          title: "Sync Vaultwarden add-on from upstream"
+          body: |
+            Automated sync of the Vaultwarden Home Assistant add-on from
+            https://github.com/hassio-addons/app-vaultwarden.
+
+            Review the changes, then merge this pull request to update the app.
+          commit-message: "Sync Vaultwarden add-on from upstream"
+          delete-branch: true

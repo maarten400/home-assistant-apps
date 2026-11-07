@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: "/finn-property-api"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: "/simplex-alert-bot"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: "/vaultwarden"
+    schedule:
+      interval: weekly
