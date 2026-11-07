@@ -1,0 +1,33 @@
+name: SimpleX Alert Bot
+version: "0.1.0"
+slug: simplex_alert_bot
+description: Official SimpleX CLI with an authenticated HTTP alert API
+url: https://github.com/maarten400/home-assistant-apps/tree/main/simplex-alert-bot
+arch:
+  - aarch64
+stage: experimental
+startup: application
+boot: manual
+init: true
+timeout: 30
+backup: cold
+ports:
+  8080/tcp: 8080
+ports_description:
+  8080/tcp: Authenticated alert API (LAN only; no built-in TLS)
+watchdog: http://[HOST]:[PORT:8080]/health
+options:
+  bot_name: HomeAlerts
+  bot_token: ""
+  recipient: ""
+  allowed_recipients: []
+  admin_enabled: false
+  admin_token: ""
+schema:
+  bot_name: str
+  bot_token: password
+  recipient: str
+  allowed_recipients:
+    - str
+  admin_enabled: bool
+  admin_token: password

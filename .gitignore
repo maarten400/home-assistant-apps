@@ -1,0 +1,8 @@
+data/
+.env
+options.json
+*.db
+*.db-*
+*.sqlite*
+__pycache__/
+*.tar.gz
