@@ -8,6 +8,14 @@ from pathlib import Path
 from settings import enabled, settings
 
 
+def prepare_x11_directory(path=Path("/tmp/.X11-unix")):
+    if path.is_symlink():
+        raise RuntimeError("Refusing a symlink as X11 socket directory")
+    path.mkdir(parents=True, exist_ok=True)
+    os.chown(path, 0, 0)
+    path.chmod(0o1777)
+
+
 def main():
     os.umask(0o077)
     options_file = Path("/data/options.json")
@@ -21,6 +29,7 @@ def main():
         os.environ.update(settings(options))
     except (ValueError, AttributeError) as exc:
         raise SystemExit(str(exc))
+    prepare_x11_directory()
     for folder in ("/data/diagnostics", "/data/browser-profile", "/tmp/finn-runtime"):
         path = Path(folder)
         path.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -30,6 +39,10 @@ def main():
     os.setgroups([])
     os.setgid(10001)
     os.setuid(10001)
+    template = Path("/app/nginx.conf").read_text()
+    location = "root /usr/share/novnc; index setup.html;" if enabled("BROWSER_SETUP_ENABLED") else 'return 200 "Browser setup is disabled. Enable browser_setup_enabled and restart the app.";'
+    Path("/tmp/finn-nginx.conf").write_text(template.replace("__SETUP_LOCATION__", location))
+    subprocess.run(["nginx", "-t", "-c", "/tmp/finn-nginx.conf"], check=True)
     children = []
     api = None
     stopping = False
@@ -48,21 +61,19 @@ def main():
             if Path("/tmp/.X11-unix/X99").exists():
                 break
             if display.poll() is not None:
-                raise RuntimeError("Xvfb exited")
+                raise RuntimeError("Xvfb exited with code " + str(display.returncode))
             time.sleep(0.1)
         else:
             raise RuntimeError("Xvfb did not start")
         if enabled("BROWSER_SETUP_ENABLED"):
             start(["x11vnc", "-display", ":99", "-localhost", "-rfbport", "5900", "-nopw", "-forever", "-shared", "-noxdamage", "-quiet"])
             start(["/usr/bin/websockify", "127.0.0.1:6080", "127.0.0.1:5900"])
-        template = Path("/app/nginx.conf").read_text()
-        location = "root /usr/share/novnc; index setup.html;" if enabled("BROWSER_SETUP_ENABLED") else 'return 200 "Browser setup is disabled. Enable browser_setup_enabled and restart the app.";'
-        Path("/tmp/finn-nginx.conf").write_text(template.replace("__SETUP_LOCATION__", location))
         start(["nginx", "-c", "/tmp/finn-nginx.conf", "-g", "daemon off;"])
         api = start([sys.executable, "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "--no-access-log"])
         while not stopping:
-            if any(p.poll() is not None for p in children):
-                raise RuntimeError("A required browser/API/UI process exited; inspect logs (including sandbox errors)")
+            for process in children:
+                if process.poll() is not None:
+                    raise RuntimeError("Required process exited: " + str(process.args[0]) + " (code " + str(process.returncode) + "); inspect preceding logs")
             time.sleep(0.5)
     finally:
         if api and api.poll() is None:

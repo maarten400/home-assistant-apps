@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.1
+
+- Fix non-root nginx startup: explicitly relocate FastCGI, uWSGI and SCGI
+  temporary paths under /tmp in addition to client/proxy temporary paths.
+- Create root-owned /tmp/.X11-unix with mode 1777 before dropping privileges.
+- Validate rendered nginx configuration before launching browser/UI processes.
+- Report the specific required process and exit code on failure.
+- Add four regression checks for paths, X11 setup permissions and startup order.
+- No cookie/profile deletion, permission expansion or sandbox changes.
+- Tests do not establish Docker/Supervisor startup or live FINN compatibility.
+
 ## 0.2.0
 
 - Replace direct HTTP fetching with headed Playwright Chromium under Xvfb.
