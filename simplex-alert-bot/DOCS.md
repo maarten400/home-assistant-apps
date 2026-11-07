@@ -52,7 +52,7 @@ curl --fail-with-body -sS http://HA_IP:8080/admin/command \
   -d '{"command":"/contacts"}'
 ```
 
-Use the contact's LOCAL display name from this response. It is your phone user's name as seen by the bot, NOT the bot's HomeAlerts profile name. For example, if localDisplayName is Maarten, configure recipient: "@Maarten". Names with whitespace are intentionally rejected in this first release; use a simple local alias/name.
+Use the contact's LOCAL display name from this response. It is your phone user's name as seen by the bot, NOT the bot's HomeAlerts profile name. For example, if localDisplayName is, configure recipient: "@". Names with whitespace are intentionally rejected in this first release; use a simple local alias/name.
 
 If you need a reusable contact address, send `/address` through the same admin endpoint. Incoming address contact requests must be reviewed/accepted via `/ac ContactName`; do not enable unrestricted auto-accept.
 
@@ -76,7 +76,7 @@ GET /health verifies an active CLI profile, not end-to-end network delivery. A f
 Projects may all use the same /alert endpoint and token with identifying text. For approved per-request routing:
 
 ```yaml
-recipient: "@Maarten"
+recipient: "@"
 allowed_recipients:
   - "@OtherContact"
   - "#ServerAlerts"
