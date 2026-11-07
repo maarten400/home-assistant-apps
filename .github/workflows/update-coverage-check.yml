@@ -1,0 +1,38 @@
+name: Repository update coverage
+
+on:
+  schedule:
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-docker-dependabot-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check every Dockerfile is covered by Dependabot
+        run: |
+          set -euo pipefail
+          missing=0
+          while IFS= read -r -d '' dockerfile; do
+            dir=$(dirname "$dockerfile")
+            if ! grep -q "directory: \"/${dir#/}\"" .github/dependabot.yml; then
+              echo "::error::Missing Dependabot Docker entry for $dir"
+              missing=1
+            fi
+          done < <(find . -type f -name Dockerfile -print0)
+
+          if [ "$missing" -ne 0 ]; then
+            gh issue create \
+              --title "Dependabot does not cover every Dockerfile" \
+              --body "One or more Dockerfile directories are missing from \`.github/dependabot.yml\`. Add a Docker package-ecosystem entry for each app directory." \
+              --label "dependencies"
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
