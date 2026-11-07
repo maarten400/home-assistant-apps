@@ -13,7 +13,7 @@ jobs:
   check-docker-dependabot-coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check every Dockerfile is covered by Dependabot
         run: |
