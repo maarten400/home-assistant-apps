@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>FINN Browser Setup</title>
+<style>body{margin:0;background:#202124;color:white;font:14px sans-serif}header{padding:10px}#screen{height:calc(100vh - 65px)}</style>
+<header>FINN dedicated browser profile. API searches are paused during setup. Finish, then disable browser_setup_enabled and restart. <span id="status">Connecting...</span></header>
+<div id="screen"></div>
+<script type="module">
+import RFB from './core/rfb.js';
+const url = new URL('websockify', new URL('./', window.location.href));
+url.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const rfb = new RFB(document.getElementById('screen'), url.href);
+rfb.scaleViewport = true;
+rfb.addEventListener('connect', () => document.getElementById('status').textContent = 'Connected');
+rfb.addEventListener('disconnect', () => document.getElementById('status').textContent = 'Disconnected: reopen after app restart');
+</script></html>

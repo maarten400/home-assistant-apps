@@ -1,0 +1,18 @@
+configuration:
+  api_key:
+    name: API key
+    description: Secret sent by n8n in the x-api-key header (at least 24 characters).
+  finn_permission_confirmed:
+    name: FINN permission confirmed
+    description: Enable automated requests only after permission has been obtained.
+  save_failure_html:
+    name: Capture failure diagnostics
+    description: Save HTML, screenshot and browser trace; may contain personal/session data.
+  browser_setup_enabled:
+    name: Enable browser profile setup
+    description: Enable interactive browser control via Ingress and pause API searches. Restart after changes. Also enable Show in sidebar on the Info page.
+  chromium_sandbox:
+    name: Enable Chromium sandbox
+    description: Keep enabled for browser isolation; disabling weakens security and does not fix bot protection.
+network:
+  8000/tcp: Authenticated property API for trusted clients

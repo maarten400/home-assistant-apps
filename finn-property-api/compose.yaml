@@ -4,23 +4,30 @@ services:
       context: .
       dockerfile: Dockerfile.standalone
     restart: unless-stopped
+    init: true
+    stop_grace_period: 60s
     ports:
       - "127.0.0.1:8000:8000"
     environment:
       API_KEY: ${API_KEY:?Set API_KEY in .env}
       FINN_PERMISSION_CONFIRMED: ${FINN_PERMISSION_CONFIRMED:-false}
       SAVE_FAILURE_HTML: ${SAVE_FAILURE_HTML:-false}
-      DATA_DIR: /data
+      CHROMIUM_SANDBOX: ${CHROMIUM_SANDBOX:-true}
+      BROWSER_SETUP_ENABLED: "false"
     volumes:
-      - diagnostics:/data
+      - data:/data
     read_only: true
     tmpfs:
-      - /tmp:size=16m
+      - /tmp:size=512m,mode=1777
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
     security_opt:
       - no-new-privileges:true
-    mem_limit: 256m
+    mem_limit: 1536m
     logging:
       driver: json-file
       options:
@@ -30,6 +37,7 @@ services:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"]
       interval: 30s
       timeout: 5s
+      start_period: 60s
       retries: 3
 volumes:
-  diagnostics:
+  data:

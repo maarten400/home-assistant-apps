@@ -1,24 +1,36 @@
 name: FINN Property API
-version: "0.1.0"
+version: "0.2.0"
 slug: finn_property_api
-description: Experimental FINN property search API with diagnostics for n8n
+description: Experimental browser-backed FINN API with private browser setup
 url: https://github.com/maarten400/home-assistant-apps/tree/main/finn-property-api
 arch:
   - amd64
   - aarch64
+stage: experimental
 startup: application
 boot: manual
 init: true
+timeout: 60
+backup: cold
+ingress: true
+ingress_port: 8099
+panel_icon: mdi:web
+panel_title: FINN Browser Setup
+panel_admin: true
 ports:
   "8000/tcp": 8089
 ports_description:
-  "8000/tcp": API endpoint (restrict to trusted clients)
+  "8000/tcp": Authenticated property API (trusted clients only)
 watchdog: "http://[HOST]:[PORT:8000]/healthz"
 options:
   api_key: ""
   finn_permission_confirmed: false
   save_failure_html: false
+  browser_setup_enabled: false
+  chromium_sandbox: true
 schema:
   api_key: password
   finn_permission_confirmed: bool
   save_failure_html: bool
+  browser_setup_enabled: bool
+  chromium_sandbox: bool
