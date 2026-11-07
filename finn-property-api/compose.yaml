@@ -1,0 +1,35 @@
+services:
+  finn-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.standalone
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      API_KEY: ${API_KEY:?Set API_KEY in .env}
+      FINN_PERMISSION_CONFIRMED: ${FINN_PERMISSION_CONFIRMED:-false}
+      SAVE_FAILURE_HTML: ${SAVE_FAILURE_HTML:-false}
+      DATA_DIR: /data
+    volumes:
+      - diagnostics:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+volumes:
+  diagnostics:

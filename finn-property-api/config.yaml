@@ -1,0 +1,24 @@
+name: FINN Property API
+version: "0.1.0"
+slug: finn_property_api
+description: Experimental FINN property search API with diagnostics for n8n
+url: https://github.com/maarten400/home-assistant-apps/tree/main/finn-property-api
+arch:
+  - amd64
+  - aarch64
+startup: application
+boot: manual
+init: true
+ports:
+  "8000/tcp": 8089
+ports_description:
+  "8000/tcp": API endpoint (restrict to trusted clients)
+watchdog: "http://[HOST]:[PORT:8000]/healthz"
+options:
+  api_key: ""
+  finn_permission_confirmed: false
+  save_failure_html: false
+schema:
+  api_key: password
+  finn_permission_confirmed: bool
+  save_failure_html: bool
