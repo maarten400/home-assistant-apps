@@ -1,5 +1,5 @@
 name: Nod
-version: "0.3.0"
+version: "0.3.1"
 slug: nod
 description: Self-hosted Nod personal agent server with Ollama auto-discovery
 url: https://github.com/n8n-io/nod
