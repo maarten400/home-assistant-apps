@@ -1,7 +1,7 @@
 name: Nod
-version: "0.1.0"
+version: "0.2.0"
 slug: nod
-description: Self-hosted Nod personal agent server
+description: Self-hosted Nod personal agent server with Ollama auto-discovery
 url: https://github.com/n8n-io/nod
 arch:
   - amd64
@@ -13,13 +13,23 @@ host_network: false
 map:
   - share:rw
 options:
-  model_provider: openai
+  model_provider: ollama
+  ollama_url: "http://host.docker.internal:11434"
+  fallback_model: "llama3.1"
+  model_base_url: ""
   model_api_key: ""
-  public_url: ""
+  model_name: ""
+  extra_env: ""
+  dry_run: false
 schema:
-  model_provider: str
+  model_provider: list(ollama|openai-compatible)
+  ollama_url: url?
+  fallback_model: str?
+  model_base_url: url?
   model_api_key: password?
-  public_url: url?
+  model_name: str?
+  extra_env: str?
+  dry_run: bool
 ports:
   3000/tcp: 3000
 ingress: true
