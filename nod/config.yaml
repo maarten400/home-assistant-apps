@@ -1,0 +1,27 @@
+name: Nod
+version: "0.1.0"
+slug: nod
+description: Self-hosted Nod personal agent server
+url: https://github.com/n8n-io/nod
+arch:
+  - amd64
+  - aarch64
+init: false
+hassio_api: true
+homeassistant_api: true
+host_network: false
+map:
+  - share:rw
+options:
+  model_provider: openai
+  model_api_key: ""
+  public_url: ""
+schema:
+  model_provider: str
+  model_api_key: password?
+  public_url: url?
+ports:
+  3000/tcp: 3000
+ingress: true
+panel_icon: mdi:robot-outline
+panel_title: Nod
