@@ -6,6 +6,7 @@ mkdir -p "$NOD_DATA_DIR"
 
 MODEL_PROVIDER="${MODEL_PROVIDER:-ollama}"
 OLLAMA_URL="${OLLAMA_URL:-http://host.docker.internal:11434}"
+OLLAMA_AUTO_DISCOVER="${OLLAMA_AUTO_DISCOVER:-true}"
 FALLBACK_MODEL="${FALLBACK_MODEL:-}"
 MODEL_BASE_URL="${MODEL_BASE_URL:-}"
 MODEL_NAME="${MODEL_NAME:-}"
@@ -28,13 +29,21 @@ discover_ollama_model() {
 
 if [ "$MODEL_PROVIDER" = "ollama" ]; then
   if [ -z "$MODEL_NAME" ]; then
-    if MODEL_NAME="$(discover_ollama_model)"; then
-      echo "Discovered Ollama model: $MODEL_NAME"
+    if [ "$OLLAMA_AUTO_DISCOVER" = "true" ]; then
+      if MODEL_NAME="$(discover_ollama_model)"; then
+        echo "Discovered Ollama model: $MODEL_NAME"
+      elif [ -n "$FALLBACK_MODEL" ]; then
+        MODEL_NAME="$FALLBACK_MODEL"
+        echo "WARNING: Ollama model discovery failed; using fallback model: $MODEL_NAME"
+      else
+        echo "ERROR: Ollama model discovery failed and no fallback_model is configured."
+        exit 1
+      fi
     elif [ -n "$FALLBACK_MODEL" ]; then
       MODEL_NAME="$FALLBACK_MODEL"
-      echo "WARNING: Ollama model discovery failed; using fallback model: $MODEL_NAME"
+      echo "Ollama auto-discovery is disabled; using fallback model: $MODEL_NAME"
     else
-      echo "ERROR: Ollama model discovery failed and no fallback_model is configured."
+      echo "ERROR: Ollama auto-discovery is disabled and neither model_name nor fallback_model is configured."
       exit 1
     fi
   fi
@@ -54,6 +63,7 @@ if [ "$DRY_RUN" = "true" ]; then
   echo "Model provider: $MODEL_PROVIDER"
   echo "Model: $MODEL_NAME"
   echo "Base URL: $MODEL_BASE_URL"
+  echo "Ollama auto-discovery: $OLLAMA_AUTO_DISCOVER"
   echo "API key configured: $([ -n "$MODEL_API_KEY" ] && echo yes || echo no)"
 
   if [ "$MODEL_PROVIDER" = "openai-compatible" ] && [ -n "$MODEL_BASE_URL" ]; then

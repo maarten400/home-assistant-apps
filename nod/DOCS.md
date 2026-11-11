@@ -13,8 +13,15 @@ Set **Model provider** to `ollama` and provide the Ollama URL, for example:
 http://host.docker.internal:11434
 ```
 
-If **Model name** is empty, the add-on queries Ollama's `/api/tags` endpoint and
-uses the first installed model. If discovery fails, it uses **Fallback model**.
+By default, **Ollama auto-discovery** is enabled. The add-on queries Ollama's
+`/api/tags` endpoint and uses the first installed model.
+
+To disable auto-discovery, turn off **Ollama auto-discovery** and set either:
+
+- **Model name**, for example `llama3.1:8b`
+- **Fallback model**, for example `llama3.1`
+
+If auto-discovery is disabled and no model is supplied, the add-on will not start.
 
 ### OpenAI-compatible servers
 
@@ -27,8 +34,8 @@ Set **Model provider** to `openai-compatible`, then provide:
 ## Dry run
 
 Enable **Dry run** to test the connection without starting Nod. The add-on will
-report the selected provider, model, base URL, and whether the model-listing
-endpoint is reachable.
+report the selected provider, model, base URL, auto-discovery state, and whether
+the model-listing endpoint is reachable.
 
 ## Important
 
