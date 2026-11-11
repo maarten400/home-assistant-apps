@@ -11,6 +11,11 @@ updates:
       interval: weekly
 
   - package-ecosystem: docker
+    directory: "/nod"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
     directory: "/simplex-alert-bot"
     schedule:
       interval: weekly
