@@ -1,7 +1,7 @@
 name: Nod
-version: "0.3.1"
+version: "0.5.0"
 slug: nod
-description: Self-hosted Nod personal agent server with Ollama auto-discovery
+description: Self-hosted Nod personal agent server with Ollama and Claude Pro subscription proxy support
 url: https://github.com/n8n-io/nod
 arch:
   - amd64
@@ -14,19 +14,31 @@ map:
   - share:rw
 options:
   model_provider: ollama
-  ollama_url: "http://host.docker.internal:11434"
+  ollama_url: "http://192.168.1.10:11434"
   ollama_auto_discover: true
+  ollama_model: ""
   fallback_model: "llama3.1"
+  claude_subscription_enabled: true
+  claude_subscription_token: ""
+  claude_model: "claude-sonnet-4-5"
+  claude_proxy_port: 3457
+  claude_proxy_command: ""
   model_base_url: ""
   model_api_key: ""
   model_name: ""
   extra_env: ""
   dry_run: false
 schema:
-  model_provider: list(ollama|openai-compatible)
+  model_provider: list(ollama|claude-subscription|openai-compatible)
   ollama_url: url?
   ollama_auto_discover: bool
+  ollama_model: str?
   fallback_model: str?
+  claude_subscription_enabled: bool
+  claude_subscription_token: password?
+  claude_model: str?
+  claude_proxy_port: port?
+  claude_proxy_command: str?
   model_base_url: url?
   model_api_key: password?
   model_name: str?
