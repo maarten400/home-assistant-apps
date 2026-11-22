@@ -21,7 +21,8 @@ jobs:
           missing=0
           while IFS= read -r -d '' dockerfile; do
             dir=$(dirname "$dockerfile")
-            if ! grep -q "directory: \"/${dir#/}\"" .github/dependabot.yml; then
+            dir="${dir#./}"
+            if ! grep -Fq "directory: \"/${dir}\"" .github/dependabot.yml; then
               echo "::error::Missing Dependabot Docker entry for $dir"
               missing=1
             fi
