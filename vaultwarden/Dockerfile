@@ -23,10 +23,10 @@ RUN \
     apt-get update \
     \
     && apt-get install -y --no-install-recommends \
-        libmariadb3 \
-        libpq5 \
-        nginx \
-        sqlite3 \
+        libmariadb-dev-compat=1:11.8.9+ds-0+deb13u1 \
+        libpq5=17.12-0+deb13u1 \
+        nginx=1.26.3-3+deb13u10 \
+        sqlite3=3.46.1-7+deb13u2 \
     && apt-get clean \
     && rm -f -r \
         /etc/nginx \
